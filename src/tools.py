@@ -66,3 +66,4 @@ def generate_report(data : str):
     
     Ce rapport est généré par Financial Analysis Agent """
 
+

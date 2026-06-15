@@ -21,4 +21,4 @@ interface = gr.Interface(
     description="Analysez n'importe quelle entreprise cotée en bourse. Exemple : Analyse Wedfinance ou Compare Wedfinance et CHEfinance."
 )
 
-interface.launch()
+interface.launch(server_name="0.0.0.0", server_port=7860)

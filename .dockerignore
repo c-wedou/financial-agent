@@ -1,0 +1,11 @@
+.env
+.git
+__pycache__
+*.pyc
+src/data/documents/*
+.gitignore
+README.md
+memory.db
+*.db
+.gradio/
+wedfinancialagent/
