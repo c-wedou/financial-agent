@@ -2,6 +2,8 @@ from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
 import yfinance as yf
 import pdfplumber 
+import plotly.graph_objects as go
+import json
 
 @tool
 def web_search(parametre : str):
@@ -53,6 +55,29 @@ def read_pdf(chemin : str):
             }) 
     return "\n\n".join([f"Page {p['page']}:\n{p['text']}" for p in pages_text if p['text']])
     
+
+
+@tool
+def get_stock_history(ticker: str) -> str:
+    """Récupère l'historique du cours de bourse sur 1 an pour générer un graphique.
+    Retourne les données en JSON pour affichage graphique.
+    Le paramètre ticker doit être un symbole boursier Yahoo Finance
+    (ex: 'AAPL' pour Apple, 'MC.PA' pour LVMH)."""
+    stock = yf.Ticker(ticker)
+    history = stock.history(period="1y")
+    
+    if history.empty:
+        return json.dumps({"error": f"Aucune donnée trouvée pour {ticker}"})
+    
+    data = {
+        "ticker": ticker,
+        "dates": history.index.strftime("%Y-%m-%d").tolist(),
+        "prices": [round(p, 2) for p in history["Close"].tolist()],
+        "company_name": stock.info.get("longName", ticker)
+    }
+    return json.dumps(data)
+
+
 
 @tool 
 def generate_report(data : str):

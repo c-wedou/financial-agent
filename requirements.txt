@@ -7,4 +7,6 @@ yfinance
 duckduckgo-search
 python-dotenv
 pdfplumber
-gradio
+streamlit
+plotly
+reportlab

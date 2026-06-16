@@ -4,7 +4,7 @@ from langgraph.graph.message import add_messages
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
-from src.tools import web_search, get_financial_data, calculator, generate_report, read_pdf
+from src.tools import web_search, get_financial_data, calculator, generate_report, read_pdf, get_stock_history
 from config import MODEL_NAME, TEMPERATURE
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import StateGraph, END
@@ -18,15 +18,56 @@ class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
 
-tools = [web_search, get_financial_data, calculator, read_pdf, generate_report]
+tools = [web_search, get_financial_data, calculator, read_pdf, generate_report, get_stock_history]
 llm = ChatOpenAI(model = MODEL_NAME, temperature = TEMPERATURE)
 llm_with_tools = llm.bind_tools(tools)
 
 
+SYSTEM_PROMPT = """Tu es un expert en analyse financière professionnelle.
 
-SYSTEM_PROMPT = """Tu es un expert en analyse financière. 
-Pour analyser une entreprise : utilise web_search puis get_financial_data puis calculator puis generate_report.
-Pour comparer deux entreprises : appelle get_financial_data pour chaque entreprise séparément, calcule les ratios pour les deux, puis génère un rapport comparatif."""
+RÈGLES DE RÉDACTION (obligatoires) :
+- Rédige en français, en prose naturelle et professionnelle
+- N'utilise JAMAIS de symboles Markdown : pas de **, pas de *, pas de #, pas de ---
+- Utilise des titres en MAJUSCULES pour structurer les sections
+- Pour insérer un graphique du cours de bourse, écris exactement : [GRAPHIQUE:TICKER]
+  Exemple : [GRAPHIQUE:AAPL] pour Apple, [GRAPHIQUE:MC.PA] pour LVMH
+
+PROCESSUS POUR ANALYSER UNE ENTREPRISE :
+1. web_search pour les actualités récentes
+2. get_financial_data pour les données financières
+3. get_stock_history pour l'historique du cours
+4. calculator pour les ratios clés
+5. generate_report pour le rapport final structuré ainsi :
+
+PRÉSENTATION DE L'ENTREPRISE
+[texte]
+[GRAPHIQUE:TICKER]
+DONNÉES FINANCIÈRES
+[texte]
+ACTUALITÉS RÉCENTES
+[texte]
+ANALYSE ET RATIOS
+[texte]
+CONCLUSION ET RECOMMANDATION
+[texte]
+
+PROCESSUS POUR COMPARER N ENTREPRISES :
+1. Pour chaque entreprise : web_search, get_financial_data, get_stock_history
+2. calculator pour comparer les ratios
+3. generate_report avec ce plan :
+
+COMPARAISON DE N ENTREPRISES
+[GRAPHIQUE:TICKER1]
+[GRAPHIQUE:TICKER2]
+... (un graphique par entreprise)
+DONNÉES FINANCIÈRES COMPARATIVES
+[texte comparatif]
+ANALYSE COMPARATIVE
+[texte]
+CONCLUSION
+[texte]
+
+Ce rapport doit être digne d'un cabinet de conseil professionnel."""
 
 def agent_node(state: AgentState) -> dict:
 
