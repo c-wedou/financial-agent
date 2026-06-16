@@ -29,18 +29,26 @@ def get_financial_data(ticker: str) -> str:
     Dette/Equity: {info.get('debtToEquity', 'N/A')}
     """
 @tool
-def calculator(operation : str, values : str):
-    """ Calcule les rations financier courants. Les calculs comme si s'était un expert financier qui veut faire un bechmarking"""
-    valeur1, valeur2 = values.split(',', maxsplit= 1)
-    valeur1, valeur2 = float(valeur1), float(valeur2)
+def calculator(operation: str, values: str):
+    """Calcule les ratios financiers courants. 
+    Le paramètre values doit contenir UNIQUEMENT deux nombres séparés par une virgule.
+    Exemple : '25.5,30.2' et non 'PE Ratio,30.2'"""
+    try:
+        parties = values.split(',', maxsplit=1)
+        if len(parties) != 2:
+            return "Erreur : values doit contenir exactement deux nombres séparés par une virgule"
+        
+        valeur1 = float(parties[0].strip())
+        valeur2 = float(parties[1].strip())
 
-    if operation == "ratio":
-        return str(valeur1/valeur2)
-    elif operation == "variation":
-        return str(((valeur2-valeur1)/valeur1)*100)
-    else:
-        return str((valeur1/valeur2)*100)
-
+        if operation == "ratio":
+            return str(round(valeur1 / valeur2, 4))
+        elif operation == "variation":
+            return str(round(((valeur2 - valeur1) / valeur1) * 100, 4))
+        else:
+            return str(round((valeur1 / valeur2) * 100, 4))
+    except ValueError as e:
+        return f"Erreur de calcul : les valeurs doivent être des nombres. Reçu : {values}"
 
 @tool
 def read_pdf(chemin : str):
