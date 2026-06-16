@@ -5,6 +5,7 @@ langchain-openai
 langchain-community
 yfinance
 duckduckgo-search
+ddgs
 python-dotenv
 pdfplumber
 streamlit
