@@ -10,7 +10,7 @@ TEMPERATURE = 0.2
 
 ### le nombre d'itérations maximum de boucles avant que l'agent s'arrête
 
-MAX_ITERATIONS = 10
+MAX_ITERATIONS = 25
 
 ### le nom du projet
 
